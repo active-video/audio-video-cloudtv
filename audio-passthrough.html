@@ -1,0 +1,111 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script src="assets/nav.js"></script>
+    <script>
+        var debug,
+            ms,
+            sourceBuffer,
+            rawData={},
+            files = {
+//                "ac3" : {
+//                    "url": "assets/audio.ac3",
+//                    "mime": 'audio/mp4; codecs="ac-3"'
+//                },
+                "mp4a" : {
+                    "url": "assets/audio.mp4",
+                    "mime": 'audio/mp4; codecs="mp4a.40.2"',
+                    "startAt": 10
+                }
+            },
+            audio = document.createElement('audio');
+
+
+        function play(type) {
+            if (sourceBuffer) {
+                ms.removeSourceBuffer(sourceBuffer)
+            }
+            sourceBuffer = ms.addSourceBuffer(files[type].mime);
+            sourceBuffer.addEventListener('updateend', function(){
+                ms.endOfStream();
+                if(files[type].startAt) {
+                    audio.currentTime = files[type].startAt;
+                }
+            });
+
+            console.log("buffer.readyState=" + sourceBuffer.readyState);
+            if(sourceBuffer.appendBuffer) {
+                sourceBuffer.appendBuffer(rawData[type]);
+            } else {
+                sourceBuffer.append(rawData[type]);
+            }
+
+        }
+
+        function log(evt){
+            debug.insertBefore(document.createTextNode('\n' + evt.type + ': ' + (evt.target.currentTime || evt.target.error && evt.target.error.code)), debug.firstChild);
+            console.log(evt);
+        }
+        // unprefix mediasource
+
+        if (window.WebKitMediaSource !== undefined) {
+            window.MediaSource = window.WebKitMediaSource;
+        }
+        ms = new MediaSource();
+
+
+        audio.setAttribute('autoplay','');
+        audio.setAttribute('controls','');
+        audio.src = URL.createObjectURL(ms);
+        audio.addEventListener('error', log);
+        audio.addEventListener('timeupdate', log);
+        audio.addEventListener('canplay', log);
+        audio.addEventListener('durationchange', log);
+        //Go fetch the raw audio data
+
+        for(var codec in files) {
+            var x = new XMLHttpRequest();
+            x.codec = codec;
+            x.responseType = 'arraybuffer';
+            x.addEventListener('load', function(evt){
+               rawData[evt.target.codec] = new Uint8Array(evt.target.response);
+            });
+            x.open('GET', files[codec].url, true);
+            x.send();
+
+
+        }
+        //Assume user can't select an audio file faster than "sourceopen" for simplicity
+        //in this example. If auto-playing a default item, you'd need to wait for "sourceopen"
+        //ms.addEventListener("sourceopen", onSourceOpen);
+        //ms.addEventListener("webkitsourceopen", onSourceOpen);
+
+
+    </script>
+</head>
+
+
+<body>
+    <h1>Audio Passhtrough Example</h1>
+    <fieldset>
+        <legend>Debug:</legend>
+        <pre></pre>
+    </fieldset>
+    <ol>
+        <script>
+            for(var codec in files){
+                document.write('<li><a href="javascript:play(\'' + codec + '\')">Play ' + codec + ' Sample</a></li>');
+            }
+        </script>
+    </ol>
+
+
+</body>
+
+<script>
+    debug = document.querySelector('pre');
+    debug.parentNode.appendChild(audio);
+</script>
+
+</html>

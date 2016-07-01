@@ -1,0 +1,1 @@
+Credit for audio samples goes to http://soundbible.com/2008-0-9-Male-Vocalized.html
