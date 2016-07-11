@@ -5,21 +5,21 @@
     <script src="assets/nav.js"></script>
     <script>
         var debug,
-            ms,
-            sourceBuffer,
-            rawData={},
-            files = {
+                ms,
+                sourceBuffer,
+                rawData={},
+                files = {
 //                "ac3" : {
 //                    "url": "assets/audio.ac3",
 //                    "mime": 'audio/mp4; codecs="ac-3"'
 //                },
-                "mp4a" : {
-                    "url": "assets/audio.mp4",
-                    "mime": 'audio/mp4; codecs="mp4a.40.2"',
-                    "startAt": null
-                }
-            },
-            audio = document.createElement('audio');
+                    "mp4a" : {
+                        "url": "assets/audio.mp4",
+                        "mime": 'audio/mp4; codecs="mp4a.40.2"',
+                        "startAt": null
+                    }
+                },
+                audio = document.createElement('audio');
 
 
         function play(type) {
@@ -69,7 +69,7 @@
             x.codec = codec;
             x.responseType = 'arraybuffer';
             x.addEventListener('load', function(evt){
-               rawData[evt.target.codec] = new Uint8Array(evt.target.response);
+                rawData[evt.target.codec] = new Uint8Array(evt.target.response);
             });
             x.open('GET', files[codec].url, true);
             x.send();
@@ -87,18 +87,20 @@
 
 
 <body>
-    <h1>Audio Passhtrough Example</h1>
-    <fieldset>
-        <legend>Debug:</legend>
-        <pre></pre>
-    </fieldset>
-    <ol>
-        <script>
-            for(var codec in files){
-                document.write('<li><a href="javascript:play(\'' + codec + '\')">Play ' + codec + ' Sample</a></li>');
-            }
-        </script>
-    </ol>
+<h1>Audio Passhtrough Example, with video in upper right Real Time Transcoded</h1>
+<fieldset>
+    <legend>Debug:</legend>
+    <pre></pre>
+</fieldset>
+<ol>
+    <script>
+        for(var codec in files){
+            document.write('<li><a href="javascript:play(\'' + codec + '\')">Play ' + codec + ' Sample</a></li>');
+        }
+    </script>
+</ol>
+
+<video autoplay style="width: 128px; height: 128px; display: block;" src="http://download.blender.org/peach/trailer/trailer_400p.ogg"></video>
 
 
 </body>
