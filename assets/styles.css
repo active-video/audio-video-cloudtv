@@ -35,3 +35,11 @@ video{
     background: red;
     display: none;
 }
+note {
+    display: block;
+    margin: 10px 0;
+}
+note span{
+    font-style: italic;
+    font-weight: bold;
+}

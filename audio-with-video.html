@@ -90,6 +90,12 @@
 
 <body>
 <h1>Audio Passhtrough Example, with video in upper right Real Time Transcoded</h1>
+<ol>
+    <li>Start app</li>
+    <li>Use ?autoplay in the URL to force 1st audio item to start</li>
+    <li>Listen as the MediaSource + audio-only sourceBuffer plays, along side an on screen video (from HTTP played via transcoder - not HW transcoder)</li>
+</ol>
+<note><span>Note:</span> the video is reduced to 10% of the volume, so that the background audio can be heard around 10 seconds in.</note>
 <fieldset>
     <legend>Debug:</legend>
     <pre></pre>
