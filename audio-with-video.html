@@ -44,8 +44,9 @@
         }
 
         function log(evt){
-            debug.insertBefore(document.createTextNode('\n' + evt.type + ': ' + (evt.target.currentTime || evt.target.error && evt.target.error.code)), debug.firstChild);
-            console.log(evt);
+            var message = '\n' + evt.type + ': ' + (evt.target.currentTime || evt.target.error && evt.target.error.code);
+            debug.insertBefore(document.createTextNode(message), debug.firstChild);
+            console.log(message);
         }
         // unprefix mediasource
 
@@ -60,6 +61,7 @@
         audio.src = URL.createObjectURL(ms);
         audio.addEventListener('error', log);
         audio.addEventListener('timeupdate', log);
+        audio.addEventListener('progress', log);
         audio.addEventListener('canplay', log);
         audio.addEventListener('durationchange', log);
         //Go fetch the raw audio data
@@ -107,7 +109,16 @@
 
 <script>
     debug = document.querySelector('pre');
-    debug.parentNode.appendChild(audio);
+    document.querySelector('video').volume = 0.1;
+
+    //Log to the console as well as on screen
+    setInterval(log.bind(window, {target: audio, type: 'time check'}), 1000);
+
+    //Auto play if "autoplay" appears in the URL (anywhere - hash or query or path)
+    if(location.href.indexOf('autoplay') !== -1) {
+        setTimeout(play.bind(window, Object.keys(files)[0]), 1000);
+    }
+
 </script>
 
 </html>
