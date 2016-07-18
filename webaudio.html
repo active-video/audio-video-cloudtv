@@ -6,7 +6,9 @@
     //creating an audio context
 
     var context;
+    var gainNode;
     var audioBuffer;
+    var source;
 
     setTimeout(init, 2000);
 
@@ -18,6 +20,8 @@
         {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             context=new AudioContext();
+            gainNode = context.createGain();
+            gainNode.gain.value = 0.7;
 
         }
         catch(e)
@@ -33,13 +37,14 @@
     function loadSound()
     {
         // set the audio file's URL
-        var audioURL='assets/ttsaudio.wav?' + Math.random();
+        var audioURL='assets/ttsaudio.wav';
         console.log("Loading " + audioURL);
 
         //creating a new request
         var request = new XMLHttpRequest();
         request.responseType= 'arraybuffer';
         request.open("GET",audioURL,true);
+        changeVideoVolumes(0.1);
         request.onload = function(){
             console.log("Loaded: " + Date.now());
 
@@ -63,19 +68,33 @@
     //playing the audio file
     function playSound() {
 
+
+
         //creating source node
         console.log("Create Source Buffer: " + Date.now());
-        var source = context.createBufferSource();
+        source = context.createBufferSource();
         source.playbackRate.value = 22050/44100;
         //passing in file
         source.buffer = audioBuffer;
 
         //start playing
-        source.connect(context.destination);  // added
+        source.connect(gainNode);  // added
+        gainNode.connect(context.destination);
+
         console.log("Playing: " + Date.now());
+
+        source.loop = true;
         source.start(0);
+        setTimeout(changeVideoVolumes.bind(window, 1.0), 3000);
         console.log('playing');
 
+    }
+
+    function changeVideoVolumes(volume){
+        var videos = document.querySelectorAll('video');
+        for(var i=0; i<videos.length; i++) {
+            videos[i].volume = volume;
+        }
     }
 </script>
 <body style="background: #fff; width: 100%; height: 100%;">
