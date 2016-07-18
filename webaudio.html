@@ -8,7 +8,8 @@
     var context;
     var audioBuffer;
 
-    window.addEventListener('load', init);
+    setTimeout(init, 2000);
+
 
     function init()
     {
@@ -32,18 +33,20 @@
     function loadSound()
     {
         // set the audio file's URL
-        var audioURL='assets/ttsaudio.wav';
+        var audioURL='assets/ttsaudio.wav?' + Math.random();
+        console.log("Loading " + audioURL);
 
         //creating a new request
         var request = new XMLHttpRequest();
         request.responseType= 'arraybuffer';
         request.open("GET",audioURL,true);
         request.onload = function(){
+            console.log("Loaded: " + Date.now());
 
             //take the audio from http request and decode it in an audio buffer
             context.decodeAudioData(request.response, function(buffer){
+                console.log("Decoded: " + Date.now());
                 audioBuffer = buffer;
-                console.log(audioBuffer);
                 if(audioBuffer){  // check here
                     playSound();
                 }
@@ -61,13 +64,15 @@
     function playSound() {
 
         //creating source node
+        console.log("Create Source Buffer: " + Date.now());
         var source = context.createBufferSource();
-        source.playbackRate.value = 22050/44000;
+        source.playbackRate.value = 22050/44100;
         //passing in file
         source.buffer = audioBuffer;
 
         //start playing
         source.connect(context.destination);  // added
+        console.log("Playing: " + Date.now());
         source.start(0);
         console.log('playing');
 
