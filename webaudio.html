@@ -1,0 +1,74 @@
+<html>
+<script>
+
+    //creating an audio context
+
+    var context;
+    var audioBuffer;
+
+    window.addEventListener('load', init);
+
+    function init()
+    {
+
+        try
+        {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            context=new AudioContext();
+
+        }
+        catch(e)
+        {
+            alert("Your browser doesn't support Web Audio API");
+        }
+
+        loadSound();
+        // playSound();  // comment here
+    }
+
+    //loading sound into the created audio context
+    function loadSound()
+    {
+        // set the audio file's URL
+        var audioURL='assets/tts.mp3';
+
+        //creating a new request
+        var request = new XMLHttpRequest();
+        request.responseType= 'arraybuffer';
+        request.open("GET",audioURL,true);
+        request.onload = function(){
+
+            //take the audio from http request and decode it in an audio buffer
+            context.decodeAudioData(request.response, function(buffer){
+                audioBuffer = buffer;
+                console.log(audioBuffer);
+                if(audioBuffer){  // check here
+                    playSound();
+                }
+            });
+
+        };
+
+        request.send();
+
+    }
+
+
+
+    //playing the audio file
+    function playSound() {
+
+        //creating source node
+        var source = context.createBufferSource();
+        source.playbackRate.value = 22050/44000;
+        //passing in file
+        source.buffer = audioBuffer;
+
+        //start playing
+        source.connect(context.destination);  // added
+        source.start(0);
+        console.log('playing');
+
+    }
+</script>
+</html>
